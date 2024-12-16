@@ -2,6 +2,9 @@ from communex.module import Module, endpoint
 from communex.key import generate_keypair
 from keylimiter import TokenBucketLimiter
 
+import importlib
+
+from ..utils.protocols import Dummy
 
 class Miner(Module):
     """
@@ -13,9 +16,18 @@ class Miner(Module):
     Methods:
         generate: Generates a response to a given prompt using a specified model.
     """
+    @endpoint
+    def forward(self, synapse: dict):
+        class_name = synapse['synapse_name']
+        protocols = importlib.import_module('..utils.protocols')
+        synapse_class = getattr(protocols, class_name)
+        
+        endpoint = getattr(self, 'forward{class_name}')
+        return endpoint(self, synapse_class(**synapse)).json()
+        
 
     @endpoint
-    def generate(self, prompt: str, model: str = "foo"):
+    def forwardDummy(self, synapse: Dummy):
         """
         Generates a response to a given prompt using a specified model.
 
@@ -26,23 +38,5 @@ class Miner(Module):
         Returns:
             None
         """
-        print(f"Answering: `{prompt}` with model `{model}`")
-
-
-if __name__ == "__main__":
-    """
-    Example
-    """
-    from communex.module.server import ModuleServer
-    import uvicorn
-
-    key = generate_keypair()
-    miner = Miner()
-    refill_rate = 1 / 400
-    # Implementing custom limit
-    bucket = TokenBucketLimiter(2, refill_rate)
-    server = ModuleServer(miner, key, ip_limiter=bucket, subnets_whitelist=[3])
-    app = server.get_fastapi_app()
-
-    # Only allow local connections
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+        synapse.answer = synapse.number * 2
+        return synapse

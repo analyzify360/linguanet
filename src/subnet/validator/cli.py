@@ -7,7 +7,7 @@ from communex.client import CommuneClient  # type: ignore
 from communex.compat.key import classic_load_key  # type: ignore
 
 from validator._config import ValidatorSettings
-from validator.validator import TextValidator
+from validator.validator import Validator
 
 app = typer.Typer()
 
@@ -23,7 +23,7 @@ def serve(
     keypair = classic_load_key(commune_key, password=password)  # type: ignore
     settings = ValidatorSettings()  # type: ignore
     c_client = CommuneClient(get_node_url(use_testnet=use_testnet))
-    validator = TextValidator(
+    validator = Validator(
         keypair,
         netuid,
         c_client,
