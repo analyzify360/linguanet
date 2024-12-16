@@ -276,19 +276,7 @@ class Validator(Module):
 
         raise NotImplementedError("This function is not yet implememented")
 
-    async def validate_step(
-        self, netuid: int, settings: ValidatorSettings
-    ) -> None:
-        """
-        Perform a validation step.
-
-        Generates questions based on the provided settings, prompts modules to generate answers,
-        and scores the generated answers against the validator's own answers.
-
-        Args:
-            netuid: The network UID of the subnet.
-        """
-
+    def get_all_miners(self, netuid):
         # retrive the miner information
         modules_adresses = self.get_addresses(self.client, netuid)
         modules_keys = self.client.query_map_key(netuid)
@@ -304,6 +292,21 @@ class Validator(Module):
             if not module_addr:
                 continue
             modules_info[module_id] = (module_addr, modules_keys[module_id])
+
+    async def validate_step(
+        self, netuid: int, settings: ValidatorSettings
+    ) -> None:
+        """
+        Perform a validation step.
+
+        Generates questions based on the provided settings, prompts modules to generate answers,
+        and scores the generated answers against the validator's own answers.
+
+        Args:
+            netuid: The network UID of the subnet.
+        """
+
+        modules_info = self.get_all_miners(netuid)
 
         score_dict: dict[int, float] = {}
 
