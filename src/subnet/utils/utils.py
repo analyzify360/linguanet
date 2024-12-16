@@ -38,4 +38,4 @@ class Logger:
     def exception(self, msg: str, *values: object):
         self.logger.exception(msg, *values)
 
-    
+logger = Logger(__name__)

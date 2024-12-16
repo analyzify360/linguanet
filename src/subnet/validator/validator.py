@@ -32,9 +32,7 @@ from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
 from ._config import ValidatorSettings
-from ..utils.utils import Logger
-
-logger = Logger(__name__)
+from ..utils.utils import logger
 
 IP_REGEX = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+")
 
