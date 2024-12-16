@@ -32,7 +32,9 @@ from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
 from ._config import ValidatorSettings
-from ..utils import log
+from ..utils.utils import Logger
+
+logger = Logger(__name__)
 
 IP_REGEX = re.compile(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+")
 
@@ -46,6 +48,7 @@ def set_weights(
     netuid: int,
     client: CommuneClient,
     key: Keypair,
+    max_retry: int = 10,
 ) -> None:
     """
     Set weights for miners based on their scores.
@@ -81,8 +84,19 @@ def set_weights(
 
     uids = list(weighted_scores.keys())
     weights = list(weighted_scores.values())
+    
     # send the blockchain call
-    client.vote(key=key, uids=uids, weights=weights, netuid=netuid)
+    for attempt in range(max_retry):
+        try:
+            client.vote(key=key, uids=uids, weights=weights, netuid=netuid)
+        except:
+            seconds = 500 + attempt * 100
+            logger.exception(f'Failed to vote: Attempt {attempt}... Sleeping {seconds}ms')
+            time.sleep(seconds / 1000)
+        else:
+            logger.info(f'Success to vote on chain')
+            break
+        attempts -= 1
 
 
 def cut_to_max_allowed_weights(
@@ -235,7 +249,7 @@ class TextValidator(Module):
             miner_answer = miner_answer["answer"]
 
         except Exception as e:
-            log(f"Miner {module_ip}:{module_port} failed to generate an answer")
+            logger.exception(f"Miner {module_ip}:{module_port} failed to generate an answer")
             print(e)
             miner_answer = None
         return miner_answer
@@ -302,7 +316,7 @@ class TextValidator(Module):
         miner_prompt = self.get_miner_prompt()
         get_miner_prediction = partial(self._get_miner_prediction, miner_prompt)
 
-        log(f"Selected the following miners: {modules_info.keys()}")
+        logger.info(f"Selected the following miners: {modules_info.keys()}")
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             it = executor.map(get_miner_prediction, modules_info.values())
@@ -311,7 +325,7 @@ class TextValidator(Module):
         for uid, miner_response in zip(modules_info.keys(), miner_answers):
             miner_answer = miner_response
             if not miner_answer:
-                log(f"Skipping miner {uid} that didn't answer")
+                logger.info(f"Skipping miner {uid} that didn't answer")
                 continue
 
             score = self._score_miner(miner_answer)
@@ -321,7 +335,7 @@ class TextValidator(Module):
             score_dict[uid] = score
 
         if not score_dict:
-            log("No miner managed to give a valid answer")
+            logger.error("No miner managed to give a valid answer")
             return None
 
         # the blockchain call to set the weights
@@ -342,5 +356,5 @@ class TextValidator(Module):
             elapsed = time.time() - start_time
             if elapsed < settings.iteration_interval:
                 sleep_time = settings.iteration_interval - elapsed
-                log(f"Sleeping for {sleep_time}")
+                logger.info(f"Sleeping for {sleep_time}")
                 time.sleep(sleep_time)
