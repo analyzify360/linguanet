@@ -6,4 +6,4 @@ class BaseSynapse(BaseModel):
 
 class Dummy(BaseSynapse):
     number: int = 1
-    result: int = None
+    result: int = 0

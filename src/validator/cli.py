@@ -6,8 +6,8 @@ from communex._common import get_node_url  # type: ignore
 from communex.client import CommuneClient  # type: ignore
 from communex.compat.key import classic_load_key  # type: ignore
 
-from validator._config import ValidatorSettings
-from validator.validator import Validator
+from ._config import ValidatorSettings
+from .validator import Validator
 
 app = typer.Typer()
 

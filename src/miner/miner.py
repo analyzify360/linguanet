@@ -19,11 +19,11 @@ class Miner(Module):
     @endpoint
     def forward(self, synapse: dict):
         class_name = synapse['synapse_name']
-        protocols = importlib.import_module('..utils.protocols')
+        protocols = importlib.import_module('src.utils.protocols')
         synapse_class = getattr(protocols, class_name)
         
-        endpoint = getattr(self, 'forward{class_name}')
-        return endpoint(self, synapse_class(**synapse)).json()
+        endpoint = getattr(self, f'forward{class_name}')
+        return endpoint(synapse_class(**synapse)).json()
         
 
     @endpoint
@@ -38,5 +38,5 @@ class Miner(Module):
         Returns:
             None
         """
-        synapse.answer = synapse.number * 2
+        synapse.result = synapse.number * 2
         return synapse
