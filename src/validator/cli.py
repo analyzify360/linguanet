@@ -15,8 +15,8 @@ app = typer.Typer()
 @app.command("serve-subnet")
 def serve(
     commune_key: Annotated[str, typer.Argument(help="Name of the key present in `~/.commune/key`")],
-    netuid: int = typer.Option(1, help="Netuid of the subnet"),
-    use_testnet: bool = typer.Option(False, help="Use testnet"),
+    netuid: int = typer.Option(38, help="Netuid of the subnet"),
+    use_testnet: bool = typer.Option(True, help="Use testnet"),
     call_timeout: int = 65,
 ):
     password = getpass.getpass(prompt = "Enter the password to decrypt your key:")

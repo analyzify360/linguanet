@@ -92,7 +92,7 @@ def set_weights(
             client.vote(key=key, uids=uids, weights=weights, netuid=netuid)
         except:
             seconds = 500 + attempt * 100
-            logger.exception(f'Failed to vote: Attempt {attempt}... Sleeping {seconds}ms')
+            logger.error(f'Failed to vote: Attempt {attempt}... Sleeping {seconds}ms')
             time.sleep(seconds / 1000)
         else:
             logger.info(f'Success to vote on chain')
@@ -251,11 +251,8 @@ class BaseValidator(Module):
             )
             response = json.loads(response)
             miner_answer = synapse.__class__(**response)
-        except TypeError as e:
-            logger.exception(f"Miner {module_ip}:{module_port} failed to generate an answer: {response}")
-            miner_answer = None
         except Exception as e:
-            logger.exception(f"Miner {module_ip}:{module_port} failed to generate an answer")
+            logger.error(f"Miner {module_ip}:{module_port} failed to generate an answer")
             miner_answer = None
         return miner_answer
 
