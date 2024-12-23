@@ -251,8 +251,8 @@ class BaseValidator(Module):
             )
             response = json.loads(response)
             miner_answer = synapse.__class__(**response)
-        except ConnectionRefusedError as e:
-            logger.exception(f'Failed to connect to miner {module_ip}:{module_port}')
+        except TypeError as e:
+            logger.exception(f"Miner {module_ip}:{module_port} failed to generate an answer: {response}")
             miner_answer = None
         except Exception as e:
             logger.exception(f"Miner {module_ip}:{module_port} failed to generate an answer")

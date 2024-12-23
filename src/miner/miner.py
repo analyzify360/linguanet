@@ -5,6 +5,7 @@ from keylimiter import TokenBucketLimiter
 import importlib
 
 from ..utils.protocols import Dummy
+from ..utils.utils import logger
 
 class Miner(Module):
     """
@@ -21,8 +22,15 @@ class Miner(Module):
         class_name = synapse['synapse_name']
         protocols = importlib.import_module('src.utils.protocols')
         synapse_class = getattr(protocols, class_name)
+        if synapse_class is None:
+            logger.error('Received invalid synapse name')
+            return 'Invalid synapse name'
         
         endpoint = getattr(self, f'forward{class_name}')
+        if endpoint is None:
+            logger.error('Received invalid endpoint')
+            return 'Invalid endpoint'
+        
         return endpoint(synapse_class(**synapse)).json()
         
 
@@ -38,5 +46,6 @@ class Miner(Module):
         Returns:
             None
         """
+        logger.info(f'Generating synapse: {synapse}')
         synapse.result = synapse.number * 2
         return synapse

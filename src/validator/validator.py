@@ -14,6 +14,7 @@ class Validator(BaseValidator):
         Returns:
             The score assigned to the miner's answer.
         """
+        print(f'miner_answer: {miner_answer}')
         return miner_answer.result == miner_answer.number * 2
 
     def get_miner_prompt(self) -> str:
