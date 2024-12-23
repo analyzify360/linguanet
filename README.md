@@ -22,19 +22,14 @@ pydantic-settings
 
 ## Miner
 
-From the root of your project, you can just call **comx module serve**. For example:
-
 ```sh
-comx module serve commune-subnet-template.subnet.miner.model.Miner <name-of-your-com-key> [--subnets-whitelist <your-subnet-netuid>] \
-[--ip <text>] [--port <number>]
+python3 -m src.miner.cli <name-of-your-com-key> [--netuid <number>] [--ip <text>] [--port <number>] [--use-testnet]
 ```
 
 ## Validator
 
-To run the validator, just call the file in which you are executing `validator.validate_loop()`. For example:
-
 ```sh
-python3 -m commune-subnet-template.subnet.cli <name-of-your-com-key>
+python3 -m src.validator.cli <name-of-your-com-key> [--netuid <number>] [--call_timeout <number>] [--use-testnet] 
 ```
 
 ## Further reading
