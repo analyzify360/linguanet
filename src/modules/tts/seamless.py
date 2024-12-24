@@ -1,8 +1,8 @@
 from transformers import AutoProcessor, SeamlessM4Tv2Model, pipeline
 import torch
 
-from neurons.validator import MODELS
-from neurons.utils.model_load import load_seamless
+from ...utils.constants import MODELS 
+from ...utils.model_load import load_seamless
 from modules.translation.data_models import TARGET_LANGUAGES
 
 def process(messages, source_language, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
@@ -30,9 +30,9 @@ def process(messages, source_language, device = torch.device("cuda" if torch.cud
     return model.generate(**input_data, tgt_lang=src_lang)[0]
 
 if __name__ == '__main__':
-    text = """Sylliba is a revolutionary translation module designed to bridge the gap in communication across diverse languages. With the capability to translate many languages, Sylliba supports both audio and text for inputs and outputs, making it a versatile tool for global interactions.
-As our first step into the Bittensor ecosystem, Sylliba connects to the network we are building, providing AI tooling and linking various blockchain networks together. Our mission is to create a seamless and intuitive translation experience that leverages advanced AI to foster better understanding and collaboration across different languages and cultures.
-Explore Sylliba and experience the future of translation here."""
+    text = """LinguaNet is an innovative translation module designed to enhance communication across diverse languages. With the ability to translate numerous languages, LinguaNet supports both audio and text inputs and outputs, making it a versatile tool for global interactions.
+As our initial step into the Commune AI ecosystem, LinguaNet connects to the network we are building, providing AI tools and linking various blockchain networks together. Our mission is to create a seamless and intuitive translation experience that utilizes advanced AI to promote better understanding and collaboration across different languages and cultures.
+Explore LinguaNet and discover the future of translation today!"""
     source_language = "English"
     output_data = process(text, source_language)
     print(f"output_data: {output_data[:100]}")
