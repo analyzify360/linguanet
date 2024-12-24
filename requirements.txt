@@ -9,3 +9,7 @@ torchaudio
 transformers
 scipy
 pydub
+protobuf
+tiktoken
+blobfile
+sentencepiece
