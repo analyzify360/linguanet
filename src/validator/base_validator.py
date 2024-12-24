@@ -24,6 +24,7 @@ import concurrent.futures
 import re
 import time
 import json
+import torch
 from functools import partial
 from pydantic import BaseModel
 
@@ -201,6 +202,7 @@ class BaseValidator(Module):
         self.key = key
         self.netuid = netuid
         self.call_timeout = call_timeout
+        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     def get_addresses(self, client: CommuneClient, netuid: int) -> dict[int, str]:
         """

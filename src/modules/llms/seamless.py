@@ -1,7 +1,7 @@
 from transformers import AutoProcessor, SeamlessM4Tv2Model, pipeline
 import torch
 
-from modules.translation.data_models import TARGET_LANGUAGES
+from ..translation.data_models import TARGET_LANGUAGES
 
 def process(messages, source_language, target_language, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """
