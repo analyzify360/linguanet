@@ -3,3 +3,9 @@ typer
 uvicorn
 keylimiter
 pydantic-settings
+numpy
+torch
+torchaudio
+transformers
+scipy
+pydub

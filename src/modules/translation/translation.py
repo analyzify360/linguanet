@@ -1,13 +1,7 @@
-import io
-import scipy
 import torch
-import base64
-import torchaudio
-import asyncio
-import wave
 import numpy as np
 
-from loguru import logger
+from ...utils.utils import logger
 from typing import Optional
 from functools import lru_cache
 from typing import Dict, Tuple, Union
@@ -15,13 +9,12 @@ from transformers import AutoProcessor, SeamlessM4Tv2Model
 from pydub import AudioSegment
 
 from .data_models import TARGET_LANGUAGES, TASK_STRINGS, TranslationRequest
-import bittensor as bt
 
-from neurons.utils.serialization import audio_encode, audio_decode
-from neurons.utils.audio_save_load import _wav_to_tensor, _tensor_to_wav
+from ...utils.serialization import audio_encode, audio_decode
+from ...utils.audio_save_load import _wav_to_tensor, _tensor_to_wav
 
-from neurons.validator import MODELS
-from neurons.utils.model_load import load_seamless
+from ...utils.constants import MODELS
+from ...utils.model_load import load_seamless
 
 class Translation:
     def __init__(self, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
@@ -56,7 +49,7 @@ class Translation:
         self.source_language = None
         self.target_language = None
 
-    async def process(self, translation_request: TranslationRequest) -> Tuple[Union[str, None], Union[torch.Tensor, None]]:
+    def process(self, translation_request: TranslationRequest) -> Tuple[Union[str, None], Union[torch.Tensor, None]]:
         """
         A function that processes a TranslationRequest object to perform translation tasks. 
         Retrieves input data, task string, source and target languages, preprocesses the input data, 
@@ -87,7 +80,7 @@ class Translation:
         if self.data_input is None:
             raise ValueError("No input provided")
         if self.task_string.startswith("speech"):
-            bt.logging.info("startswith(speech)")
+            logger.info("startswith(speech)")
             try:
                 self.data_input = audio_decode(self.data_input)
                 file_name = "./modules/translation/audio_request.wav"
@@ -104,7 +97,7 @@ class Translation:
                 src_lang=self.target_languages[self.source_language],
                 tgt_lang=self.target_languages[self.target_language]
             )
-        bt.logging.info(f"output before audio processing:{output[:100]}")
+        logger.info(f"output before audio processing:{output[:100]}")
                 
         if self.task_string.endswith("speech"):
             file_name = "./modules/translation/audio_output.wav"

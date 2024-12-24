@@ -4,12 +4,12 @@ from importlib import import_module
 from ..utils.protocols import *
 from ..utils.constants import *
 from ..utils.utils import logger
-from ..utils.serialization import audio_encode
+from ..utils.serialization import audio_encode, audio_decode
 
 from .base_validator import BaseValidator
 
 class Validator(BaseValidator):
-    def _score_miner(self, miner_answer: TranslationSynapse | None) -> float:
+    def _score_miner(self, miner_answer: TranslationSynapse | None, original_synapse: TranslationSynapse) -> float:
         """
         Score the generated answer against the validator's own answer.
 
@@ -19,7 +19,21 @@ class Validator(BaseValidator):
         Returns:
             The score assigned to the miner's answer.
         """
-        return miner_answer.result == miner_answer.number * 2
+        task_string = original_synapse.translation_request['task_string']
+        
+        if miner_answer.miner_response is not None:
+            if task_string.endswith('speech'):
+                miner_output_data = audio_decode(miner_answer.miner_response)
+            else:
+                miner_output_data = miner_answer.miner_response
+            
+            return float(self.process_validator_output(
+                miner_output_data,
+                original_synapse['output'],
+                task_string
+            )) # 'numpy.float64' object cannot be interpreted as integer
+        else:
+            return 0
 
     def get_miner_prompt(self) -> str:
         """
@@ -54,7 +68,7 @@ class Validator(BaseValidator):
             "target_language": target_language
         }
 
-        return TranslationSynapse(translation_request = translation_request)
+        return TranslationSynapse(translation_request = translation_request), sample_request
     
     def generate_input_data(self, llm, topic, source_language, device):
         messages = [{"role": "system", "content": PROMPTS["GENERATE_INPUT_DATA"].format(topic=topic, source_language=source_language)}]

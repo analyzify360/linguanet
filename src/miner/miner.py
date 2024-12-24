@@ -4,8 +4,9 @@ from keylimiter import TokenBucketLimiter
 
 import importlib
 
-from ..utils.protocols import Dummy
+from ..utils.protocols import *
 from ..utils.utils import logger
+from ..modules.translation.translation import Translation
 
 class Miner(Module):
     """
@@ -17,6 +18,12 @@ class Miner(Module):
     Methods:
         generate: Generates a response to a given prompt using a specified model.
     """
+    
+    def __init__(self):
+        super(Miner, self).__init__()
+        
+        self.translation = Translation()
+    
     @endpoint
     def forward(self, synapse: dict):
         class_name = synapse['synapse_name']
@@ -35,7 +42,7 @@ class Miner(Module):
         
 
     @endpoint
-    def forwardDummy(self, synapse: Dummy):
+    def forwardTranslationSynapse(self, synapse: TranslationSynapse):
         """
         Generates a response to a given prompt using a specified model.
 
@@ -46,6 +53,7 @@ class Miner(Module):
         Returns:
             None
         """
-        logger.info(f'Generating synapse: {synapse}')
-        synapse.result = synapse.number * 2
+        response = self.translation.process(translation_request=synapse.translation_request)
+        synapse.miner_response = response
+        logger.info(f"synapse.miner_response : {synapse.miner_response[:100]}")
         return synapse
