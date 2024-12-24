@@ -27,12 +27,11 @@ TOPICS = [
 ]
 
 LLMS : list[str] = [
-    "modules.llms.llama",
-    # "modules.llms.flan_t5_large"
+    "..modules.llms.llama",
 ]
 
 TTS : list[str] = [
-    "modules.tts.seamless"
+    "..modules.tts.seamless"
 ]
 
 MODELS: dict = {
