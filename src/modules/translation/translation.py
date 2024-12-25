@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from ...utils.utils import logger
+from src.utils.utils import logger
 from typing import Optional
 from functools import lru_cache
 from typing import Dict, Tuple, Union
@@ -10,11 +10,11 @@ from pydub import AudioSegment
 
 from .data_models import TARGET_LANGUAGES, TASK_STRINGS, TranslationRequest
 
-from ...utils.serialization import audio_encode, audio_decode
-from ...utils.audio_save_load import _wav_to_tensor, _tensor_to_wav
+from src.utils.serialization import audio_encode, audio_decode
+from src.utils.audio_save_load import _wav_to_tensor, _tensor_to_wav
 
-from ...utils.constants import MODELS
-from ...utils.model_load import load_seamless
+from src.utils.constants import MODELS
+from src.utils.model_load import load_seamless
 
 class Translation:
     def __init__(self, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):

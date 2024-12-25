@@ -1,7 +1,7 @@
-from ...utils.constants import MODELS 
+from src.utils.constants import MODELS 
 from typing import List, Dict, Any
 import torch
-from ...utils.model_load import load_llama
+from src.utils.model_load import load_llama
 
 def process(messages: List[Dict[str, Any]], device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """

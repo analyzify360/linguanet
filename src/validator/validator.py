@@ -1,10 +1,10 @@
 import random
 from importlib import import_module
 
-from ..utils.protocols import *
-from ..utils.constants import *
-from ..utils.utils import logger
-from ..utils.serialization import audio_encode, audio_decode
+from src.utils.protocols import *
+from src.utils.constants import *
+from src.utils.utils import logger
+from src.utils.serialization import audio_encode, audio_decode
 
 from .base_validator import BaseValidator
 

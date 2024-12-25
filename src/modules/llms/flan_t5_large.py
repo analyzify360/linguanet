@@ -1,7 +1,7 @@
 import torch
 
-from ...utils.constants import MODELS 
-from ...utils.model_load import load_flan_t5_large
+from src.utils.constants import MODELS 
+from src.utils.model_load import load_flan_t5_large
 
 def process(messages, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")):
     """

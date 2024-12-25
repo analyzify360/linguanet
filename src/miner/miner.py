@@ -4,9 +4,9 @@ from keylimiter import TokenBucketLimiter
 
 import importlib
 
-from ..utils.protocols import *
-from ..utils.utils import logger
-from ..modules.translation.translation import Translation
+from src.utils.protocols import *
+from src.utils.utils import logger
+from src.modules.translation.translation import Translation
 
 class Miner(Module):
     """
