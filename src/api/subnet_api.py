@@ -9,14 +9,14 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 from pydantic import BaseModel
 
-from validator_api import ValidatorAPI
+from .validator_api import ValidatorAPI
 
 from communex._common import get_node_url  # type: ignore
 from communex.client import CommuneClient  # type: ignore
 from communex.compat.key import classic_load_key  # type: ignore
 
-from utils.serialization import audio_encode
-from utils.audio_save_load import _wav_to_tensor, _save_raw_audio_file
+from src.utils.serialization import audio_encode
+from src.utils.audio_save_load import _wav_to_tensor, _save_raw_audio_file
 
 # Setup basic logging
 logging.basicConfig(level=logging.INFO)
@@ -29,17 +29,14 @@ class TranslationInput(BaseModel):
     target_language: str
     
 class SubnetAPI:
-    def __init__(self, 
-        commune_key: Annotated[str, typer.Argument(help="Name of the key present in `~/.commune/key`")],
-        use_testnet: bool = typer.Option(False)
-    ):
+    def __init__(self, commune_key, netuid, use_testnet):
         self.app = FastAPI()
         
         password = getpass.getpass(prompt="Enther the password:")
         keypair = classic_load_key(commune_key, password=password)  # type: ignore
         c_client = CommuneClient(get_node_url(use_testnet = use_testnet))  # type: ignore
         
-        self.validator_api = ValidatorAPI(keypair, 30, c_client, 60)
+        self.validator_api = ValidatorAPI(keypair, netuid, c_client, 60)
 
         # Add CORS middleware to allow cross-origin requests
         self.app.add_middleware(
@@ -108,7 +105,14 @@ class ExceptionHandlingMiddleware(BaseHTTPMiddleware):
             )
         return response
 
-if __name__ == "__main__":
+def serve(
+    commune_key: Annotated[str, typer.Argument(help="Name of the key present in `~/.commune/key`")],
+    netuid: int = typer.Option(38),
+    use_testnet: bool = typer.Option(True)
+):
     import uvicorn
-    api = SubnetAPI()
+    api = SubnetAPI(commune_key, netuid, use_testnet)
     uvicorn.run(api.app, host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    typer.run(serve)

@@ -14,10 +14,10 @@ from communex.module.module import Module  # type: ignore
 from communex.types import Ss58Address  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 
-from utils.utils import *
-from utils.protocols import *
-from utils.serialization import audio_decode
-from utils.audio_save_load import _tensor_to_wav
+from src.utils.utils import *
+from src.utils.protocols import *
+from src.utils.serialization import audio_decode
+from src.utils.audio_save_load import _tensor_to_wav
 
 class ValidatorAPI(Module):
     def __init__(
@@ -50,7 +50,9 @@ class ValidatorAPI(Module):
         module_addreses = client.query_map_address(netuid)
         return module_addreses
     
-    def get_all_miners(self, velora_netuid):
+    def get_all_miners(self, miner_whitelist = None):
+        velora_netuid = self.netuid
+        
         modules_adresses = self.get_addresses(self.client, velora_netuid)
         modules_keys = self.client.query_map_key(velora_netuid)
         val_ss58 = self.key.ss58_address
@@ -61,6 +63,8 @@ class ValidatorAPI(Module):
 
         modules_filtered_address = get_ip_port(modules_adresses)
         for module_id in modules_keys.keys():
+            if miner_whitelist is not None and module_id not in miner_whitelist:
+                continue
             module_addr = modules_filtered_address.get(module_id, None)
             if not module_addr:
                 continue
@@ -122,7 +126,7 @@ class ValidatorAPI(Module):
         
         return answers
     
-    def get_top_miners(self, k = 5):
+    def get_top_miners_uids(self, k = 5):
         miner_weights = self.client.query_map_weights(netuid=self.netuid)
         
         # Dictionary to store the sum of weights for each miner_uid
@@ -137,6 +141,12 @@ class ValidatorAPI(Module):
         top_k_miners = sorted(miner_weight_sums.items(), key=lambda x: x[1], reverse=True)[:k]
         
         return [miner_uid for miner_uid, _ in top_k_miners]
+
+    def get_top_miners(self, k = 5):
+        miner_uids = self.get_top_miners_uids(k)
+        miners = self.get_all_miners(miner_uids)
+        
+        return miners
     
     def get_translation(self, translation_request: dict):
         modules_info = self.get_top_miners()
@@ -145,7 +155,7 @@ class ValidatorAPI(Module):
         
         result = []
         for response in responses:
-            if response.miner_response is not None:
+            if response is not None and response.miner_response is not None:
                 if translation_request['task_string'].endswith('speech'):
                     miner_output_data = audio_decode(response.miner_response)
                     wav_file = _tensor_to_wav(miner_output_data)
