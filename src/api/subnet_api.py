@@ -57,7 +57,7 @@ class SubnetAPI:
         self.app.add_middleware(ExceptionHandlingMiddleware)
 
         # Define routes
-        @self.app.get('/api/translation')
+        @self.app.post('/api/translation')
         async def get_translation(request: TranslationInput):
             logger.info('request received')
             if request.task_string.startswith('speech'):
@@ -112,7 +112,7 @@ def serve(
 ):
     import uvicorn
     api = SubnetAPI(commune_key, netuid, use_testnet)
-    uvicorn.run(api.app, host="0.0.0.0", port=8000)
+    uvicorn.run(api.app, host="0.0.0.0", port=10125)
 
 if __name__ == "__main__":
     typer.run(serve)
