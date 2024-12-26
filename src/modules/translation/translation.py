@@ -8,7 +8,7 @@ from typing import Dict, Tuple, Union
 from transformers import AutoProcessor, SeamlessM4Tv2Model
 from pydub import AudioSegment
 
-from .data_models import TARGET_LANGUAGES, TASK_STRINGS, TranslationRequest
+from .data_models import TARGET_LANGUAGES, TASK_STRINGS
 
 from src.utils.serialization import audio_encode, audio_decode
 from src.utils.audio_save_load import _wav_to_tensor, _tensor_to_wav
@@ -49,7 +49,7 @@ class Translation:
         self.source_language = None
         self.target_language = None
 
-    def process(self, translation_request: TranslationRequest) -> Tuple[Union[str, None], Union[torch.Tensor, None]]:
+    def process(self, translation_request: dict) -> Tuple[Union[str, None], Union[torch.Tensor, None]]:
         """
         A function that processes a TranslationRequest object to perform translation tasks. 
         Retrieves input data, task string, source and target languages, preprocesses the input data, 
@@ -66,14 +66,14 @@ class Translation:
                 A tuple containing either a string or None, and either a torch.Tensor or None, 
                 representing the processed output.
         """
-        if "input" in translation_request.data:
-            self.data_input = translation_request.data["input"]
-        if "task_string" in translation_request.data:
-            self.task_string = translation_request.data["task_string"]
-        if "source_language" in translation_request.data:
-            self.source_language = translation_request.data["source_language"].title()
-        if "target_language" in translation_request.data:
-            self.target_language = translation_request.data["target_language"].title()
+        if "input" in translation_request:
+            self.data_input = translation_request["input"]
+        if "task_string" in translation_request:
+            self.task_string = translation_request["task_string"]
+        if "source_language" in translation_request:
+            self.source_language = translation_request["source_language"].title()
+        if "target_language" in translation_request:
+            self.target_language = translation_request["target_language"].title()
         if not self.task_string:
             raise ValueError(f"Invalid task string: {translation_request.data}")
 
@@ -83,7 +83,7 @@ class Translation:
             logger.info("startswith(speech)")
             try:
                 self.data_input = audio_decode(self.data_input)
-                file_name = "./modules/translation/audio_request.wav"
+                file_name = "./src/modules/translation/audio_request.wav"
                 _tensor_to_wav(self.data_input, file_name)
             except Exception as e:
                 logger.error(f"Error preprocessing input: {e}")
@@ -100,7 +100,7 @@ class Translation:
         logger.info(f"output before audio processing:{output[:100]}")
                 
         if self.task_string.endswith("speech"):
-            file_name = "./modules/translation/audio_output.wav"
+            file_name = "./src/modules/translation/audio_output.wav"
             _tensor_to_wav(output, file_name)
             output = audio_encode(output)
         
@@ -208,7 +208,7 @@ class Translation:
             logger.error(f"Error processing translation: {e}")
             raise
     
-def text2text(translation: Translation, miner_request: Optional[TranslationRequest] = None):
+def text2text(translation: Translation, miner_request: Optional[dict] = None):
     """
     Generates a translation of the input text from English to French using the given Translation object.
 
@@ -225,13 +225,11 @@ def text2text(translation: Translation, miner_request: Optional[TranslationReque
         >>> text2text(translation, miner_request)
         'Bonjour, je m'appelle John Doe.'
     """
-    translation_request = miner_request or TranslationRequest(
-        data={"input": "Hello, my name is John Doe.", "task_string": "text2text", "source_language": "English", "target_language": "French"}
-    )
+    translation_request = miner_request or {"input": "Hello, my name is John Doe.", "task_string": "text2text", "source_language": "English", "target_language": "French"}
     return translation.process(translation_request)
 
 
-def text2speech(translation: Translation, miner_request: Optional[TranslationRequest] = None):
+def text2speech(translation: Translation, miner_request: Optional[dict] = None):
     """
     Generates speech from text using the given Translation object.
 
@@ -242,13 +240,11 @@ def text2speech(translation: Translation, miner_request: Optional[TranslationReq
     Returns:
         Union[str, None]: The generated speech as a string, or None if an error occurred.
     """
-    translation_request = miner_request or TranslationRequest(
-        data={"input": "Hello, my name is John Doe.", "task_string": "text2speech", "source_language": "English", "target_language": "French"}
-    )
+    translation_request = miner_request or {"input": "Hello, my name is John Doe.", "task_string": "text2speech", "source_language": "English", "target_language": "French"}
     return translation.process(translation_request)
 
 
-def speech2text(translation: Translation, miner_request: Optional[TranslationRequest] = None):
+def speech2text(translation: Translation, miner_request: Optional[dict] = None):
     """
     A function that converts speech input to text using a given Translation object.
     
@@ -259,13 +255,11 @@ def speech2text(translation: Translation, miner_request: Optional[TranslationReq
     Returns:
         The processed text output.
     """
-    translation_request = miner_request or TranslationRequest(
-        data={"input": "./modules/translation/audio_request.wav", "task_string": "speech2text", "source_language": "English", "target_language": "French"}
-    )
+    translation_request = miner_request or {"input": "./src/modules/translation/audio_request.wav", "task_string": "speech2text", "source_language": "English", "target_language": "French"}
     return translation.process(translation_request)
 
 
-def speech2speech(translation: Translation, miner_request: Optional[TranslationRequest] = None):
+def speech2speech(translation: Translation, miner_request: Optional[dict] = None):
     """
     Converts speech input to speech output using a given Translation object.
     
@@ -276,9 +270,7 @@ def speech2speech(translation: Translation, miner_request: Optional[TranslationR
     Returns:
         The processed speech output.
     """
-    translation_request = miner_request or TranslationRequest(
-        data={"input": "./modules/translation/audio_request.wav", "task_string": "speech2speech", "source_language": "English", "target_language": "French"}
-    )
+    translation_request = miner_request or {"input": "./src/modules/translation/audio_request.wav", "task_string": "speech2speech", "source_language": "English", "target_language": "French"}
     return translation.process(translation_request)
 
 if __name__ == "__main__":

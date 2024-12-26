@@ -3,7 +3,7 @@ import datetime
 import logging
 import time
 import re
-from validator._config import ValidatorSettings
+from src.validator._config import ValidatorSettings
 from communex.client import CommuneClient  # type: ignore
 from substrateinterface import Keypair  # type: ignore
 

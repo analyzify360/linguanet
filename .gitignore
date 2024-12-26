@@ -180,3 +180,6 @@ ta-lib/
 
 venv-3.11/
 venv-3.12/
+
+src/modules/translation/audio_output.wav
+src/modules/translation/audio_request.wav

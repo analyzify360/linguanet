@@ -182,7 +182,7 @@ class BaseValidator(Module):
 
         score_dict: dict[int, float] = {}
 
-        miner_prompt, original_synapse = self.get_miner_prompt()
+        miner_prompt, problem = self.get_miner_prompt()
         get_miner_prediction = partial(self._get_miner_prediction, miner_prompt)
 
         logger.info(f"Selected the following miners: {modules_info.keys()}")
@@ -197,7 +197,7 @@ class BaseValidator(Module):
                 logger.info(f"Skipping miner {uid} that didn't answer")
                 continue
 
-            score = self._score_miner(miner_answer, original_synapse)
+            score = self._score_miner(miner_answer, problem)
             time.sleep(0.5)
             # score has to be lower or eq to 1, as one is the best score, you can implement your custom logic
             assert score <= 1

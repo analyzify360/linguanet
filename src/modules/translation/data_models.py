@@ -119,15 +119,10 @@ TARGET_LANGUAGES = {
     "Standard Malay": "zsm",
     "Zulu": "zul",
 }
-    
-class TranslationRequest(BaseModel):
-    data: dict
-
    
 __all__ = [
     "TranslationConfig",
     "TranslationData",
-    "TranslationRequest",
     "TARGET_LANGUAGES",
     "TASK_STRINGS",
 ]

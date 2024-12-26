@@ -5,11 +5,12 @@ from src.utils.protocols import *
 from src.utils.constants import *
 from src.utils.utils import logger
 from src.utils.serialization import audio_encode, audio_decode
+from src.utils.score import score_text, score_speech
 
 from .base_validator import BaseValidator
 
 class Validator(BaseValidator):
-    def _score_miner(self, miner_answer: TranslationSynapse | None, original_synapse: TranslationSynapse) -> float:
+    def _score_miner(self, miner_answer: TranslationSynapse | None, original_synapse: dict) -> float:
         """
         Score the generated answer against the validator's own answer.
 
@@ -19,7 +20,7 @@ class Validator(BaseValidator):
         Returns:
             The score assigned to the miner's answer.
         """
-        task_string = original_synapse.translation_request['task_string']
+        task_string = original_synapse['task_string']
         
         if miner_answer.miner_response is not None:
             if task_string.endswith('speech'):
@@ -34,6 +35,13 @@ class Validator(BaseValidator):
             )) # 'numpy.float64' object cannot be interpreted as integer
         else:
             return 0
+    
+    def process_validator_output(self, miner_response, sample_outputs, task_string):
+        if task_string.endswith('text'):
+            scores = [score_text(miner_response, sample_output) for sample_output in sample_outputs]
+        else:
+            scores = [score_speech(miner_response, sample_output) for sample_output in sample_outputs]
+        return sum(scores) / len(scores)
 
     def get_miner_prompt(self) -> str:
         """

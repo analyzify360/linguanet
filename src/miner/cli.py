@@ -19,7 +19,7 @@ def serve(
     commune_key: str,
     netuid: int = 38,
     ip: str = typer.Option("0.0.0.0", help="IP to bind the server to"),
-    port: int = typer.Option(9998, help="Port to bind the server to"),
+    port: int = typer.Option(9999, help="Port to bind the server to"),
     use_testnet: bool = typer.Option(True, help="Network to connect to [`mainnet`, `testnet`]"),
 ):
     password = getpass.getpass(prompt="Enter the password for your key:")
