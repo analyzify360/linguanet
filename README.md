@@ -14,6 +14,9 @@ In an increasingly globalized world, effective communication across languages an
 - **💡 Multimodal Communication:** Enable applications to handle dynamic modes of interaction, such as voice assistants understanding and responding in multiple languages.
 - **✨ Enhanced User Experience:** Power multilingual customer support systems, enabling businesses to reach diverse audiences.
 - **🤝 Universal Inclusion:** Provide tools for the hearing or visually impaired by converting speech to text or text to speech.
+- **🌟 Support for 103 Languages:** LinguaNet supports an impressive 103 diverse languages, making it one of the most versatile translation subnets available. Whether you’re working with widely spoken languages like English and Spanish or lesser-known ones, LinguaNet ensures high-quality, real-time translations. 🌏🗣️
+
+LinguaNet is your ultimate partner in building smarter apps, expanding your reach to global audiences, and enabling seamless interactions across cultures and regions. 🚀
 
 ## 🚀 How to Run
 
