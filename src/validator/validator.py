@@ -50,8 +50,8 @@ class Validator(BaseValidator):
         Returns:
             The generated prompt for the miner modules.
         """
-        source_language = "English"
-        target_language = random.choice(TARGET_LANGUAGES)
+        source_language = random.choice(LANGUAGES)
+        target_language = random.choice(LANGUAGES)
         task_string = random.choice(TASK_STRINGS)
         topic = random.choice(TOPICS)
 
