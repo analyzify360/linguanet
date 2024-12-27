@@ -17,10 +17,10 @@ app = typer.Typer()
 @app.command("serve-subnet")
 def serve(
     commune_key: str,
-    netuid: int = 38,
+    netuid: int = 35,
     ip: str = typer.Option("0.0.0.0", help="IP to bind the server to"),
     port: int = typer.Option(9999, help="Port to bind the server to"),
-    use_testnet: bool = typer.Option(True, help="Network to connect to [`mainnet`, `testnet`]"),
+    use_testnet: bool = typer.Option(False, help="Network to connect to [`mainnet`, `testnet`]"),
 ):
     password = getpass.getpass(prompt="Enter the password for your key:")
     key = classic_load_key(commune_key, password=password)
