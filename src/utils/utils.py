@@ -95,7 +95,7 @@ def set_weights(
     # send the blockchain call
     for attempt in range(max_retry):
         try:
-            client.vote(key=key, uids=uids, weights=weights, netuid=netuid)
+            client.vote_encrypted(key=key, uids=uids, weights=weights, netuid=netuid)
         except:
             seconds = 500 + attempt * 100
             logger.error(f'Failed to vote: Attempt {attempt}... Sleeping {seconds}ms')
