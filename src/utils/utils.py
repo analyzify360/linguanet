@@ -103,7 +103,6 @@ def set_weights(
         else:
             logger.info(f'Success to vote on chain')
             break
-        attempts -= 1
 
 
 def cut_to_max_allowed_weights(
